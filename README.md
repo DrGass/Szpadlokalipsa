@@ -1,5 +1,5 @@
 # Szpadlokalipsa
-2d sidescroller game with lots of shovels
+2d sidescroller shooter with LOTS of shovels
 
 ## Technologies:
 - Unity 2021.3.18f1
