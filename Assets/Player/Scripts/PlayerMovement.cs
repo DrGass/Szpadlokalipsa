@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public float checkRadius;
     public int maxJumpCount;
+    public Transform weapon;
     
     private Rigidbody2D rb;
     private float moveDirection;
@@ -91,6 +92,7 @@ public class PlayerMovement : MonoBehaviour
     {
         facingRight = !facingRight;
         transform.Rotate(0f,180f,0f);
+        
     }
     
 }
