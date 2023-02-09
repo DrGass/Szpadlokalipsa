@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -20,7 +17,9 @@ public class PlayerMovement : MonoBehaviour
     private bool isJumping;
     private bool isGrounded;
     private float jumpCount;
-
+    private bool lookingUp = false;
+    private bool lookingDown = false;
+    private Vector3 initialPos = new Vector3(0.484f,0.037f,0f);
 
     private void Awake()
     {
@@ -39,6 +38,9 @@ public class PlayerMovement : MonoBehaviour
         //Get Inputs
         ProcessInputs();
         
+        // Check if weapon needs adjustment
+        ProcessWeapon();
+        
         // Animate
         Animate();
 
@@ -46,14 +48,22 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         //Check if grounded
+        CheckGrounded();
+
+        // Move
+        Move();
+        
+        
+
+    }
+
+    private void CheckGrounded()
+    {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundObjects);
         if (isGrounded)
         {
             jumpCount = maxJumpCount;
         }
-        
-        // Move
-        Move();
     }
 
     private void Move()
@@ -94,5 +104,50 @@ public class PlayerMovement : MonoBehaviour
         transform.Rotate(0f,180f,0f);
         
     }
-    
+
+    void ProcessWeapon()
+    {
+        if (Input.GetButtonDown("LookUp") && lookingUp == false)
+        {
+            lookingUp = true;
+            WeaponUp();
+        }
+        else if (Input.GetButtonDown("LookDown") && lookingDown == false)
+        {
+            lookingDown = true;
+            WeaponDown();
+        }
+        else if (Input.GetButtonUp("LookUp"))
+        {
+            lookingUp = false;
+            if (facingRight) weapon.transform.position = transform.position + initialPos;
+            else weapon.transform.position = transform.position - initialPos;
+            weapon.transform.Rotate(0f, 0f, -90f);
+        }
+        else if (Input.GetButtonUp("LookDown"))
+        {
+            lookingDown = false;
+            if (facingRight) weapon.transform.position = transform.position + initialPos;
+            else weapon.transform.position = transform.position - initialPos;
+            weapon.transform.Rotate(0f, 0f, 90f);
+        }
+    }
+
+    void WeaponDown()
+        {
+            weapon.transform.Rotate(0f, 0f, -90f);
+            var transformPosition = transform.position;
+            transformPosition.y -= 1f;
+            weapon.transform.position = transformPosition;
+        }
+   
+
+        void WeaponUp()
+        {
+            weapon.transform.Rotate(0f, 0f, 90f);
+            var transformPosition = transform.position;
+            transformPosition.y += 1f;
+            weapon.transform.position = transformPosition;
+        }
+ 
 }
