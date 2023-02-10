@@ -10,6 +10,9 @@ public class PlayerMovement : MonoBehaviour
     public float checkRadius;
     public int maxJumpCount;
     public Transform weapon;
+    public SpriteRenderer spriteRenderer;
+    public Sprite newSprite;
+    public Sprite oldSprite;
     
     private Rigidbody2D rb;
     private float moveDirection;
@@ -20,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     private bool lookingUp = false;
     private bool lookingDown = false;
     private Vector3 initialPos = new Vector3(0.484f,0.037f,0f);
+    private bool isCrouching = false;
 
     private void Awake()
     {
@@ -112,25 +116,39 @@ public class PlayerMovement : MonoBehaviour
             lookingUp = true;
             WeaponUp();
         }
-        else if (Input.GetButtonDown("LookDown") && lookingDown == false)
+        else if (Input.GetButtonUp("LookUp"))
+        {
+            lookingUp = false;
+            TurnBackWeapon();
+            weapon.transform.Rotate(0f, 0f, -90f);
+            lookingUp = false;
+        }
+
+       
+        if (Input.GetButtonDown("LookDown") && !lookingDown && !isGrounded)
         {
             lookingDown = true;
             WeaponDown();
         }
-        else if (Input.GetButtonUp("LookUp"))
+        else if (lookingDown && isGrounded)
         {
-            lookingUp = false;
-            if (facingRight) weapon.transform.position = transform.position + initialPos;
-            else weapon.transform.position = transform.position - initialPos;
-            weapon.transform.Rotate(0f, 0f, -90f);
-        }
-        else if (Input.GetButtonUp("LookDown"))
-        {
-            lookingDown = false;
-            if (facingRight) weapon.transform.position = transform.position + initialPos;
-            else weapon.transform.position = transform.position - initialPos;
+            TurnBackWeapon();
             weapon.transform.Rotate(0f, 0f, 90f);
+            lookingDown = false;
         }
+        else if (Input.GetButtonUp("LookDown") && lookingDown)
+        {
+            TurnBackWeapon();
+            weapon.transform.Rotate(0f, 0f, 90f);
+            lookingDown = false;
+        }
+        
+    }
+
+    private void TurnBackWeapon()
+    {
+        if (facingRight) weapon.transform.position = transform.position + initialPos;
+        else weapon.transform.position = transform.position - initialPos;
     }
 
     void WeaponDown()
@@ -142,12 +160,12 @@ public class PlayerMovement : MonoBehaviour
         }
    
 
-        void WeaponUp()
+    void WeaponUp()
         {
             weapon.transform.Rotate(0f, 0f, 90f);
             var transformPosition = transform.position;
             transformPosition.y += 1f;
             weapon.transform.position = transformPosition;
         }
- 
+    
 }
